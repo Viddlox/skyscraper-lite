@@ -82,10 +82,10 @@ When the board isn't solved, the algorithm continues with backtracking:
 
 ### Tree Navigation Analogy
 
-Think of the solving process as navigating a decision tree:
+Think of the solving process for each cell as navigating a decision tree:
 
-- **Root Node** - Represents the completed, solved board
-- **Levels** - Each level corresponds to choosing a tower height for one cell
+- **Root Node** - Represents the completed, solved cell
+- **Levels** - Each level corresponds to choosing a tower height for that one cell
 - **Branches** - Each node can branch into up to 4 child states (heights 1-4)
 - **Traversal** - Move down one branch at a time using depth-first search
 - **Backtracking** - When hitting a base case, propagate results up the call stack
