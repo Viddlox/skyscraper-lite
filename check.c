@@ -18,9 +18,7 @@ bool	check_col_top_to_bottom(int board[4][4], int col, int clue)
 		}
 		row++;
 	}
-	if (visible == clue)
-		return (true);
-	return (false);
+	return (visible == clue);
 }
 
 bool	check_col_bottom_to_top(int board[4][4], int col, int clue)
@@ -41,9 +39,7 @@ bool	check_col_bottom_to_top(int board[4][4], int col, int clue)
 		}
 		row--;
 	}
-	if (visible == clue)
-		return (true);
-	return (false);
+	return (visible == clue);
 }
 
 bool	check_row_left_to_right(int board[4][4], int row, int clue)
@@ -64,9 +60,7 @@ bool	check_row_left_to_right(int board[4][4], int row, int clue)
 		}
 		col++;
 	}
-	if (visible == clue)
-		return (true);
-	return (false);
+	return (visible == clue);
 }
 
 bool	check_row_right_to_left(int board[4][4], int row, int clue)
@@ -87,9 +81,7 @@ bool	check_row_right_to_left(int board[4][4], int row, int clue)
 		}
 		col--;
 	}
-	if (visible == clue)
-		return (true);
-	return (false);
+	return (visible == clue);
 }
 
 bool	check_board(int board[4][4], int *clues)
