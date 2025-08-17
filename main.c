@@ -2,7 +2,7 @@
 
 int	solve(int board[4][4], int *clues);
 
-void	empty_board(int (*board)[4][4])
+void	empty_board(int board[4][4])
 {
 	int	row;
 	int	col;
@@ -14,7 +14,7 @@ void	empty_board(int (*board)[4][4])
 		col = 0;
 		while (col < 4)
 		{
-			(*board)[row][col] = 0;
+			board[row][col] = 0;
 			col++;
 		}
 		row++;
@@ -85,7 +85,7 @@ int	main(int ac, char **av)
 		write(1, "Invalid clue edges provided\n", 28);
 		return (1);
 	}
-	empty_board(&board);
+	empty_board(board);
 	if (!solve(board, clues))
 	{
 		write(1, "Unsolvable puzzle\n", 18);
