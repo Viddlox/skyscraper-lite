@@ -91,66 +91,6 @@ Think of the solving process for each cell as navigating a decision tree:
 - **Backtracking** - When a board state leads to a dead end (does not satisfy clue edge visibility or uniqueness constraints), backtrack to the previous state and try the next height option
 - **Exploration** - This continues until either all possibilities are exhausted or we find a valid complete board
 
-```mermaid
-graph TD
-    A["🏗️ Start: Empty 4x4 Board<br/>Find first empty cell (0,0)"] --> B["Try height = 1 at (0,0)"]
-    A --> C["Try height = 2 at (0,0)"]
-    A --> D["Try height = 3 at (0,0)"]
-    A --> E["Try height = 4 at (0,0)"]
-    
-    B --> B1["✅ Valid? Check row/col duplicates"]
-    B1 -->|"Valid"| B2["🔍 Recurse: Find next empty cell"]
-    B1 -->|"Invalid"| B3["❌ Backtrack: Try next height"]
-    
-    B2 --> B2A["Try heights 1-4 at next position"]
-    B2A --> B2B["Continue DFS..."]
-    B2B --> B2C["🎯 All cells filled?"]
-    B2C -->|"Yes"| B2D["🔎 check_board(): Validate all clues"]
-    B2C -->|"No"| B2E["Continue to next empty cell"]
-    
-    B2D -->|"✅ All clues satisfied"| SUCCESS["🏆 SOLUTION FOUND!"]
-    B2D -->|"❌ Clue violation"| BACKTRACK["⬅️ Backtrack: Reset cell to 0"]
-    
-    C --> C1["Check duplicates for height=2"]
-    C1 -->|"Valid"| C2["Recurse deeper..."]
-    C1 -->|"Invalid"| C3["Try height=3"]
-    
-    D --> D1["Check duplicates for height=3"]
-    D1 -->|"Valid"| D2["Recurse deeper..."]
-    D1 -->|"Invalid"| D3["Try height=4"]
-    
-    E --> E1["Check duplicates for height=4"]
-    E1 -->|"Valid"| E2["Recurse deeper..."]
-    E1 -->|"Invalid"| DEADEND["💀 Dead end: Backtrack"]
-    
-    BACKTRACK --> RETRY["🔄 Try different height at current cell"]
-    DEADEND --> RETRY
-    
-    RETRY -->|"More heights to try"| B2A
-    RETRY -->|"All heights exhausted"| BACKTRACK2["⬅️ Backtrack to previous cell"]
-    
-    BACKTRACK2 --> PREVLEVEL["Previous recursion level"]
-    
-    subgraph "Key Functions"
-        F1["🔍 search_traverse_empty()<br/>Find next empty cell (row,col)"]
-        F2["✅ check_no_duplicates()<br/>Validate row & column constraints"]
-        F3["🎯 check_board()<br/>Validate all visibility clues:<br/>• Top→Bottom • Bottom→Top<br/>• Left→Right • Right→Left"]
-    end
-    
-    subgraph "Clue Validation Details"
-        G1["Clues[0-3]: Top→Bottom views"]
-        G2["Clues[4-7]: Bottom→Top views"]
-        G3["Clues[8-11]: Left→Right views"]  
-        G4["Clues[12-15]: Right→Left views"]
-    end
-    
-    style SUCCESS fill:#90EE90
-    style DEADEND fill:#FFB6C1
-    style BACKTRACK fill:#FFE4B5
-    style A fill:#E6F3FF
-    style F3 fill:#FFFACD
-```
-
 ## Clue System & Validation
 
 ### Visual Clue Layout
@@ -232,3 +172,10 @@ int check_board(int board[4][4], int *clues)
 - `main.c` - Input parsing, validation, and program entry point
 - `solve.c` - Core solving algorithm and recursive functions
 - `check.c` - Validation and constraint checking functions
+
+---
+
+## Video Explanation
+
+For a complete walkthrough, watch this detailed video which breaks down the program from start to finish:
+**[Watch Full Explanation](https://www.youtube.com/watch?v=3adIKB6FvaY)**
