@@ -84,22 +84,152 @@ When the board isn't solved, the algorithm continues with backtracking:
 
 Think of the solving process for each cell as navigating a decision tree:
 
-- **Root Node** - Represents the completed, solved cell
-- **Levels** - Each level corresponds to choosing a tower height for that one cell
-- **Branches** - Each node can branch into up to 4 child states (heights 1-4)
-- **Traversal** - Move down one branch at a time using depth-first search
-- **Backtracking** - When hitting a base case, propagate results up the call stack
-- **Exploration** - After completing one branch, backtrack and try the next available height
+- **Root Node** - The starting board state (empty grid)
+- **Levels** - Each level represents a board state after filling one more empty cell
+- **Nodes** - Each node represents a partial board state at that point in the solving process
+- **Branches** - From each board state, up to 4 branches emerge (one for each possible tower height 1-4)
+- **Traversal** - Move down one branch at a time using depth-first search, exploring partial board configurations
+- **Backtracking** - When a board state leads to a dead end (does not satisfy clue edge visibility or uniqueness constraints), backtrack to the previous state and try the next height option
+- **Exploration** - This continues until either all possibilities are exhausted or we find a valid complete board
 
-This ensures all possibilities are explored until a solution is found or the search space is exhausted.
+```mermaid
+graph TD
+    A["🏗️ Start: Empty 4x4 Board<br/>Find first empty cell (0,0)"] --> B["Try height = 1 at (0,0)"]
+    A --> C["Try height = 2 at (0,0)"]
+    A --> D["Try height = 3 at (0,0)"]
+    A --> E["Try height = 4 at (0,0)"]
+    
+    B --> B1["✅ Valid? Check row/col duplicates"]
+    B1 -->|"Valid"| B2["🔍 Recurse: Find next empty cell"]
+    B1 -->|"Invalid"| B3["❌ Backtrack: Try next height"]
+    
+    B2 --> B2A["Try heights 1-4 at next position"]
+    B2A --> B2B["Continue DFS..."]
+    B2B --> B2C["🎯 All cells filled?"]
+    B2C -->|"Yes"| B2D["🔎 check_board(): Validate all clues"]
+    B2C -->|"No"| B2E["Continue to next empty cell"]
+    
+    B2D -->|"✅ All clues satisfied"| SUCCESS["🏆 SOLUTION FOUND!"]
+    B2D -->|"❌ Clue violation"| BACKTRACK["⬅️ Backtrack: Reset cell to 0"]
+    
+    C --> C1["Check duplicates for height=2"]
+    C1 -->|"Valid"| C2["Recurse deeper..."]
+    C1 -->|"Invalid"| C3["Try height=3"]
+    
+    D --> D1["Check duplicates for height=3"]
+    D1 -->|"Valid"| D2["Recurse deeper..."]
+    D1 -->|"Invalid"| D3["Try height=4"]
+    
+    E --> E1["Check duplicates for height=4"]
+    E1 -->|"Valid"| E2["Recurse deeper..."]
+    E1 -->|"Invalid"| DEADEND["💀 Dead end: Backtrack"]
+    
+    BACKTRACK --> RETRY["🔄 Try different height at current cell"]
+    DEADEND --> RETRY
+    
+    RETRY -->|"More heights to try"| B2A
+    RETRY -->|"All heights exhausted"| BACKTRACK2["⬅️ Backtrack to previous cell"]
+    
+    BACKTRACK2 --> PREVLEVEL["Previous recursion level"]
+    
+    subgraph "Key Functions"
+        F1["🔍 search_traverse_empty()<br/>Find next empty cell (row,col)"]
+        F2["✅ check_no_duplicates()<br/>Validate row & column constraints"]
+        F3["🎯 check_board()<br/>Validate all visibility clues:<br/>• Top→Bottom • Bottom→Top<br/>• Left→Right • Right→Left"]
+    end
+    
+    subgraph "Clue Validation Details"
+        G1["Clues[0-3]: Top→Bottom views"]
+        G2["Clues[4-7]: Bottom→Top views"]
+        G3["Clues[8-11]: Left→Right views"]  
+        G4["Clues[12-15]: Right→Left views"]
+    end
+    
+    style SUCCESS fill:#90EE90
+    style DEADEND fill:#FFB6C1
+    style BACKTRACK fill:#FFE4B5
+    style A fill:#E6F3FF
+    style F3 fill:#FFFACD
+```
+
+## Clue System & Validation
+
+### Visual Clue Layout
+
+The 16 clues surround the 4x4 grid, representing how many skyscrapers are visible from each edge:
+
+```
+       Top Clues (0-3)
+        0   1   2   3
+      ┌───┬───┬───┬───┐
+   8  │   │   │   │   │  4
+      ├───┼───┼───┼───┤
+   9  │   │   │   │   │  5
+      ├───┼───┼───┼───┤
+  10  │   │   │   │   │  6
+      ├───┼───┼───┼───┤
+  11  │   │   │   │   │  7
+      └───┴───┴───┴───┘
+        15  14  13  12
+     Bottom Clues (12-15)
+```
+
+### Index Mapping Logic
+
+### Clue Validation Process
+
+The `check_board()` function validates all 16 clues by calling the appropriate visibility checking function for each viewing direction (top -> bottom -> left -> right):
+
+```c
+bool check_board(int board[4][4], int *clues)
+{
+    int i = 0;
+    while (clues[i])
+    {
+        // Top → Bottom views (clues[0-3])
+        if (i >= 0 && i <= 3 && 
+            !check_col_top_to_bottom(board, i, clues[i] - 1))
+            return (false);
+        
+        // Bottom → Top views (clues[4-7]) 
+        if (i >= 4 && i <= 7 && 
+            !check_col_bottom_to_top(board, i - 4, clues[i] - 1))
+            return (false);
+        
+        // Left → Right views (clues[8-11])
+        if (i >= 8 && i <= 11 && 
+            !check_row_left_to_right(board, i - 8, clues[i] - 1))
+            return (false);
+        
+        // Right → Left views (clues[12-15])
+        if (i >= 12 && i <= 15 && 
+            !check_row_right_to_left(board, i - 12, clues[i] - 1))
+            return (false);
+        i++;
+    }
+    return (true);
+}
+```
+
+### Key Implementation Details
+
+1. **Index Shifting**: 
+   - Column views: `clues[i]` maps directly to column `i`
+   - Row views: `clues[i]` maps to row `(i - 8)` for left→right, `(i - 12)` for right→left
+
+2. **Visibility Rules**:
+   - A building is visible if it's taller than all buildings in front of it
+   - The first building in any row/column is always counted as visible
+   - Subsequent buildings are only counted if they're taller than the current maximum
+   - `clues[i] - 1` to translate clues to zero-index for visibility check, with `visible = 0` initally.
+
+3. **Validation Order**:
+   - Columns are checked first (top→bottom, then bottom→top)
+   - Rows are checked second (left→right, then right→left)
+   - All 16 clues must be satisfied for a board to be valid
 
 ## File Structure
 
 - `main.c` - Input parsing, validation, and program entry point
 - `solve.c` - Core solving algorithm and recursive functions
 - `check.c` - Validation and constraint checking functions
-- `a.exe` - Compiled executable
-
----
-
-*For detailed explanations of helper methods and solving techniques, please refer to the accompanying video documentation.* 
