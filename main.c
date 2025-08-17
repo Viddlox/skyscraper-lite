@@ -41,7 +41,7 @@ int	parse_clues(char *av, int *clues)
 		else
 			return (j);
 	}
-	return (j);
+	return (j == 16);
 }
 
 void	print_board(int board[4][4])
@@ -80,7 +80,7 @@ int	main(int ac, char **av)
 		write(1, "Invalid amount of arguments (ac != 2)\n", 38);
 		return (1);
 	}
-	if (parse_clues(av[1], clues) != 16)
+	if (!parse_clues(av[1], clues))
 	{
 		write(1, "Invalid clue edges provided\n", 28);
 		return (1);

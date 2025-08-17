@@ -1,6 +1,4 @@
-#include <stdbool.h>
-
-bool	check_col_top_to_bottom(int board[4][4], int col, int clue)
+int	check_col_top_to_bottom(int board[4][4], int col, int clue)
 {
 	int	row;
 	int	max;
@@ -18,12 +16,10 @@ bool	check_col_top_to_bottom(int board[4][4], int col, int clue)
 		}
 		row++;
 	}
-	if (visible == clue)
-		return (true);
-	return (false);
+	return (visible == clue);
 }
 
-bool	check_col_bottom_to_top(int board[4][4], int col, int clue)
+int	check_col_bottom_to_top(int board[4][4], int col, int clue)
 {
 	int	row;
 	int	max;
@@ -41,12 +37,10 @@ bool	check_col_bottom_to_top(int board[4][4], int col, int clue)
 		}
 		row--;
 	}
-	if (visible == clue)
-		return (true);
-	return (false);
+	return (visible == clue);
 }
 
-bool	check_row_left_to_right(int board[4][4], int row, int clue)
+int	check_row_left_to_right(int board[4][4], int row, int clue)
 {
 	int	col;
 	int	max;
@@ -64,12 +58,10 @@ bool	check_row_left_to_right(int board[4][4], int row, int clue)
 		}
 		col++;
 	}
-	if (visible == clue)
-		return (true);
-	return (false);
+	return (visible == clue);
 }
 
-bool	check_row_right_to_left(int board[4][4], int row, int clue)
+int	check_row_right_to_left(int board[4][4], int row, int clue)
 {
 	int	col;
 	int	max;
@@ -87,12 +79,10 @@ bool	check_row_right_to_left(int board[4][4], int row, int clue)
 		}
 		col--;
 	}
-	if (visible == clue)
-		return (true);
-	return (false);
+	return (visible == clue);
 }
 
-bool	check_board(int board[4][4], int *clues)
+int	check_board(int board[4][4], int *clues)
 {
 	int	i;
 
@@ -101,17 +91,17 @@ bool	check_board(int board[4][4], int *clues)
 	{
 		if (i >= 0 && i <= 3
 			&& !check_col_top_to_bottom(board, i, clues[i] - 1))
-			return (false);
+			return (0);
 		if (i >= 4 && i <= 7
 			&& !check_col_bottom_to_top(board, i - 4, clues[i] - 1))
-			return (false);
+			return (0);
 		if (i >= 8 && i <= 11
 			&& !check_row_left_to_right(board, i - 8, clues[i] - 1))
-			return (false);
+			return (0);
 		if (i >= 12 && i <= 15
 			&& !check_row_right_to_left(board, i - 12, clues[i] - 1))
-			return (false);
+			return (0);
 		i++;
 	}
-	return (true);
+	return (1);
 }

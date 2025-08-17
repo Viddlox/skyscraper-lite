@@ -25,7 +25,6 @@ Before diving into the code, ensure you understand these fundamental concepts:
 ## Technical Implementation
 
 ### Libraries Used
-- `#include <stdbool.h>` - Clean boolean operations instead of integer truthy values
 - `#include <unistd.h>` - For `write(1, &c, 1)` function
 
 > **Note:** We avoid `stdlib.h` and `malloc` by using hardcoded arrays for simplicity and automatic memory management.
@@ -181,7 +180,7 @@ The 16 clues surround the 4x4 grid, representing how many skyscrapers are visibl
 The `check_board()` function validates all 16 clues by calling the appropriate visibility checking function for each viewing direction (top -> bottom -> left -> right):
 
 ```c
-bool check_board(int board[4][4], int *clues)
+int check_board(int board[4][4], int *clues)
 {
     int i = 0;
     while (clues[i])
@@ -189,25 +188,25 @@ bool check_board(int board[4][4], int *clues)
         // Top → Bottom views (clues[0-3])
         if (i >= 0 && i <= 3 && 
             !check_col_top_to_bottom(board, i, clues[i] - 1))
-            return (false);
+            return (0);
         
         // Bottom → Top views (clues[4-7]) 
         if (i >= 4 && i <= 7 && 
             !check_col_bottom_to_top(board, i - 4, clues[i] - 1))
-            return (false);
+            return (0);
         
         // Left → Right views (clues[8-11])
         if (i >= 8 && i <= 11 && 
             !check_row_left_to_right(board, i - 8, clues[i] - 1))
-            return (false);
+            return (0);
         
         // Right → Left views (clues[12-15])
         if (i >= 12 && i <= 15 && 
             !check_row_right_to_left(board, i - 12, clues[i] - 1))
-            return (false);
+            return (0);
         i++;
     }
-    return (true);
+    return (1);
 }
 ```
 

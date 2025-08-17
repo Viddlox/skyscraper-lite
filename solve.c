@@ -1,9 +1,8 @@
 #include <unistd.h>
-#include <stdbool.h>
 
-bool	check_board(int board[4][4], int *cell);
+int	check_board(int board[4][4], int *clues);
 
-bool	search_traverse_empty(int board[4][4], int *row, int *col)
+int	search_traverse_empty(int board[4][4], int *row, int *col)
 {
 	*row = 0;
 	*col = 0;
@@ -13,15 +12,15 @@ bool	search_traverse_empty(int board[4][4], int *row, int *col)
 		while (*col < 4)
 		{
 			if (board[*row][*col] == 0)
-				return (true);
+				return (1);
 			*col += 1;
 		}
 		*row += 1;
 	}
-	return (false);
+	return (0);
 }
 
-bool	check_no_duplicates_col(int board[4][4], int col, int tower_height)
+int	check_no_duplicates_col(int board[4][4], int col, int tower_height)
 {
 	int	row;
 
@@ -29,13 +28,13 @@ bool	check_no_duplicates_col(int board[4][4], int col, int tower_height)
 	while (row < 4)
 	{
 		if (board[row][col] == tower_height)
-			return (false);
+			return (0);
 		row++;
 	}
-	return (true);
+	return (1);
 }
 
-bool	check_no_duplicates_row(int board[4][4], int row, int tower_height)
+int	check_no_duplicates_row(int board[4][4], int row, int tower_height)
 {
 	int	col;
 
@@ -43,21 +42,19 @@ bool	check_no_duplicates_row(int board[4][4], int row, int tower_height)
 	while (col < 4)
 	{
 		if (board[row][col] == tower_height)
-			return (false);
+			return (0);
 		col++;
 	}
-	return (true);
+	return (1);
 }
 
-bool	check_no_duplicates(int board[4][4], int r, int c, int tower_height)
+int	check_no_duplicates(int board[4][4], int r, int c, int tower_height)
 {
-	if (check_no_duplicates_row(board, r, tower_height)
-		&& check_no_duplicates_col(board, c, tower_height))
-		return (true);
-	return (false);
+	return (check_no_duplicates_row(board, r, tower_height)
+		&& check_no_duplicates_col(board, c, tower_height));
 }
 
-bool	solve(int board[4][4], int *clues)
+int	solve(int board[4][4], int *clues)
 {
 	int	row;
 	int	col;
@@ -65,7 +62,7 @@ bool	solve(int board[4][4], int *clues)
 
 	tower_height = 1;
 	if (!search_traverse_empty(board, &row, &col) && check_board(board, clues))
-		return (true);
+		return (1);
 	while (tower_height <= 4)
 	{
 		if (check_no_duplicates(board, row, col, tower_height)
@@ -73,10 +70,10 @@ bool	solve(int board[4][4], int *clues)
 		{
 			board[row][col] = tower_height;
 			if (solve(board, clues))
-				return (true);
+				return (1);
 			board[row][col] = 0;
 		}
 		tower_height++;
 	}
-	return (false);
+	return (0);
 }
