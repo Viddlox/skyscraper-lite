@@ -113,8 +113,6 @@ The 16 clues surround the 4x4 grid, representing how many skyscrapers are visibl
      Bottom Clues (12-15)
 ```
 
-### Index Mapping Logic
-
 ### Clue Validation Process
 
 The `check_board()` function validates all 16 clues by calling the appropriate visibility checking function for each viewing direction (top -> bottom -> left -> right):
